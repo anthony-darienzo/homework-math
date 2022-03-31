@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{homework-math}[2022/02/17 Math homework class]
+\ProvidesClass{homework-math}[2022/03/30 Math homework class]
 
 \font\tinyslbf=cmbxsl10
 
