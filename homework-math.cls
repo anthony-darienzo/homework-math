@@ -183,6 +183,7 @@
 \newcounter{exctr}
 \setcounter{exctr}{0}
 \renewcommand\theexctr{\arabic{exctr}}%
+\renewcommand\theequation{\theexctr.\arabic{equation}}%
 \regtotcounter{exctr}
 
 \newenvironment{exercise}[1][]{%
