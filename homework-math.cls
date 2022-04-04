@@ -100,6 +100,13 @@
 	\end{tcolorbox}%
 }%
 
+\newenvironment{warning_box*}{%
+	\begin{tcolorbox}[colframe=\@titlecolor]
+}%
+{%
+	\end{tcolorbox}%
+}%
+
 \newenvironment{indented}{%
   \par%
   \medskip
@@ -115,6 +122,14 @@
 \providecommand{\ul}[1]{\underline{#1}}
 \providecommand{\hw}[1]{\widehat{#1}}
 \providecommand{\bvec}[1]{\overrightarrow{#1}}
+
+% Groupings macros.
+\providecommand{\fb}[1]{{\left[#1\right]}}
+\providecommand{\pwrap}[1]{{\left(#1\right)}}
+\providecommand{\bwrap}[1]{{\left\{#1\right\}}}
+\providecommand{\abs}[1]{{\left|#1\right|}}
+\providecommand{\norm}[1]{{\left\|#1\right\|}}
+\providecommand{\brak}[1]{{\left\langle#1\right\rangle}}
 
 \providecommand\restr[2]{{% we make the whole thing an ordinary symbol
    \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
