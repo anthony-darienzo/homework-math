@@ -36,6 +36,9 @@
 \RequirePackage{hyperref}
 \RequirePackage[shortcuts]{extdash}
 
+\RequirePackage{setspace}
+\onehalfspacing%
+
 \RequirePackage{xcolor}
 
 \RequirePackage{tcolorbox}
@@ -64,6 +67,9 @@
   }%
   \bigbreak
 }}%
+
+% Maintain compatibility with typewriter-math
+\providecommand\makehomeworktitle{\maketitle}
 
 % header commands are called at the end to give a chance for the user to load
 % the geometry package, which must be loaded before headers are defined
