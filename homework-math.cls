@@ -271,5 +271,6 @@
 \newtheorem*{conjecture*}{Conjecture}
 \newtheorem{definitionprop}[theorem]{Definition/Proposition}
 \newtheorem*{definitionprop*}{Definition/Proposition}
+\newtheorem{bigremark}[theorem]{Remark}
 \newtheorem*{bigremark*}{Remark}
 
