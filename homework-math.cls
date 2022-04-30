@@ -46,11 +46,31 @@
 % Add this package to count the number of exercises in the document.
 \RequirePackage{totcount}
 
+\RequirePackage{tocloft}
+\setlength{\cftbeforesecskip}{1pt}
+\providecommand{\smalltableofcontents}{%
+\singlespacing%
+\centerline{%
+\begin{minipage}[c]{0.65\linewidth}%
+  \small
+  \tableofcontents%
+\end{minipage}%
+\onehalfspacing%
+}%
+}
+
+\def\@subtitle{}
 \def\subtitle#1{\gdef\@subtitle{#1}}
+\def\@contact{}
 \def\contact#1{\gdef\@contact{#1}}
 
 \def\@titlecolor{red!95!green!90!blue!90!}%
 \def\titlecolor#1{\gdef\@titlecolor{#1}}%
+
+\def\@author{}
+\def\@title{}
+
+\edef\measurepage{\dimexpr\pagegoal-\pagetotal-\baselineskip\relax}
 
 \renewcommand{\maketitle}{{%
   \thispagestyle{plain} % surpress header on first page
@@ -216,7 +236,7 @@
 {%
 	\ifnum\theexctr<\totvalue{exctr} %
 		\sectionrule
-	\fi %
+	\fi%
 }%
 \newenvironment{exercise*}{%
 \noindent\textbf{Exercise:}%
