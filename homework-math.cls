@@ -219,6 +219,16 @@
   \end{tikzcd}%
 }%
 
+% Based on
+% https://davidyat.es/2016/07/27/writing-a-latex-macro-that-takes-a-variable-number-of-arguments/
+\newcommand\cycle[1]{%
+	\begin{psmallmatrix}%
+		#1\@cyclechecknextarg}
+\newcommand{\@cyclechecknextarg}{\@ifnextchar\bgroup{\@cyclegobblenextarg}{%
+	\end{psmallmatrix} }}
+\newcommand{\@cyclegobblenextarg}[1]{ & #1 \@ifnextchar\bgroup{\@cyclegobblenextarg}{%
+	\end{psmallmatrix} }}
+
 \def\comment#1{{\color{magenta} [#1]}}
 
 \newcounter{exctr}
