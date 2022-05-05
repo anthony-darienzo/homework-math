@@ -104,11 +104,14 @@
     \tikz[baseline]{\path[decoration={markings,
       mark=between positions 0 and 1 step 2*#3
       with {\node[fill, circle, minimum width=#3, inner sep=0pt, anchor=south west] {};}},postaction={decorate}]  (0,#1) -- ++(#2,0);}}
-
+	
 \def\sectionrule{%
-  \par\vspace{\baselineskip}
-  \noindent\hspace{\fill}{\dhorline{5em}{3pt}}\hspace{\fill}
-  \par \vspace{\baselineskip}
+  \par
+	\vskip \baselineskip
+	\cleaders\vbox{\noindent\hspace*{\fill}\mbox{\dhorline{5em}{3pt}}\hspace*{\fill}}%
+	\vskip 0.5em
+	\nointerlineskip %
+	\vskip \baselineskip
 }%
 
 \providecommand\boxhrule{\tcblower}%
@@ -237,15 +240,22 @@
 \renewcommand\theequation{\theexctr.\arabic{equation}}%
 \regtotcounter{exctr}
 
+\newcounter{sectionrulechecker}
+\newcommand{\nosectionrule}{\setcounter{sectionrulechecker}{1}}
+\setcounter{sectionrulechecker}{0}
+
 \newenvironment{exercise}[1][]{%
 \refstepcounter{exctr}%
+\setcounter{sectionrulechecker}{0}
 \label{ex:\theexctr}%
 \addcontentsline{toc}{section}{Exercise \theexctr~#1}%
 \noindent\textbf{Exercise \theexctr~#1:~}%
 }%
 {%
 	\ifnum\theexctr<\totvalue{exctr} %
-		\sectionrule
+		\ifnum\value{sectionrulechecker}<1 %
+			\sectionrule
+		\fi%
 	\fi%
 }%
 \newenvironment{exercise*}{%
