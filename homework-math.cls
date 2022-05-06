@@ -244,6 +244,7 @@
 \newcommand{\nosectionrule}{\setcounter{sectionrulechecker}{1}}
 \setcounter{sectionrulechecker}{0}
 
+
 \newenvironment{exercise}[1][]{%
 \refstepcounter{exctr}%
 \setcounter{sectionrulechecker}{0}
@@ -258,12 +259,60 @@
 		\fi%
 	\fi%
 }%
+
+
 \newenvironment{exercise*}{%
 \noindent\textbf{Exercise:}%
 }%
 {%
 \sectionrule
 }%
+
+\newenvironment{exercise-like}[2][Exercise]{%
+	\refstepcounter{exctr}%
+	\setcounter{sectionrulechecker}{0}
+	\label{ex:\theexctr}%
+	\addcontentsline{toc}{section}{Exercise \theexctr~#2}%
+	\noindent\textbf{#1 \theexctr~#2:~}%
+}%
+{%
+	\ifnum\theexctr<\totvalue{exctr} %
+		\ifnum\value{sectionrulechecker}<1 %
+			\sectionrule
+		\fi%
+	\fi%
+}%
+
+\newenvironment{centered-exercise-like}[3][Exercise]{%
+	\refstepcounter{exctr}%
+	\setcounter{sectionrulechecker}{0}
+	\label{ex:\theexctr}%
+	\addcontentsline{toc}{section}{#1 \theexctr~#2}%
+	\def\temp{#2}\ifx\temp\empty
+		{%
+			\fontsize{11}{11}\selectfont%
+			\noindent\hspace*{\fill}\textbf{#1 \theexctr}\hspace*{\fill}
+		}%
+	\else
+		{%
+			\fontsize{11}{11}\selectfont%
+			\noindent\hspace*{\fill}\textbf{#1 \theexctr:~#2}\hspace*{\fill}
+		}%
+	\fi
+	\par
+	\medskip
+	#3
+	\par
+	\medskip
+}%
+{%
+	\ifnum\theexctr<\totvalue{exctr} %
+		\ifnum\value{sectionrulechecker}<1 %
+			\sectionrule
+		\fi%
+	\fi%
+}%
+
 \newenvironment{last_exercise}[1][]{%
 \refstepcounter{exctr}%
 \label{ex:\theexctr}%
@@ -279,6 +328,7 @@
 {%
 \par\vspace{\baselineskip}
 }%
+
 
 % New theorem-like environments
 % These will be typeset in italics
