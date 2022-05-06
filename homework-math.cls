@@ -289,18 +289,17 @@
 	\label{ex:\theexctr}%
 	\addcontentsline{toc}{section}{#1 \theexctr~#2}%
 	\def\temp{#2}\ifx\temp\empty
-		{%
-			\fontsize{11}{11}\selectfont%
-			\noindent\hspace*{\fill}\textbf{#1 \theexctr}\hspace*{\fill}
-		}%
+		\begin{center}%
+				\fontsize{11}{11}\selectfont%
+				\textbf{#1 \theexctr}%
+		\end{center}%
 	\else
-		{%
+		\begin{center}%
 			\fontsize{11}{11}\selectfont%
-			\noindent\hspace*{\fill}\textbf{#1 \theexctr:~#2}\hspace*{\fill}
-		}%
+			\textbf{#1 \theexctr:~#2}%
+		\end{center}%
 	\fi
-	\par
-	\medskip
+	\nobreak
 	#3
 	\par
 	\medskip
