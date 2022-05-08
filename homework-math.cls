@@ -88,6 +88,26 @@
   \bigbreak
 }}%
 
+\newcommand{\makecenteredtitle}{{%
+	\thispagestyle{plain}%
+	\color{\@titlecolor}%
+	{\hspace*{\fill}\smallslbf{\@title}\hspace*{\fill}}
+	\smallskip
+	\hrule
+	\smallskip
+	{%
+		{%
+			\color{darkgray}%
+			\noindent\textit{\@subtitle}%
+			\hfill%
+			\textit{\@author~(\@contact)}%
+			\hfill%
+			\textit{\@date}%
+		}%
+	}%
+	\bigbreak
+}}%
+
 % Maintain compatibility with typewriter-math
 \providecommand\makehomeworktitle{\maketitle}
 
