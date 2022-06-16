@@ -134,28 +134,6 @@
 	\vskip \baselineskip
 }%
 
-\providecommand\boxhrule{\tcblower}%
-\newenvironment{warning_box}[1]{%
-	\begin{tcolorbox}[title=#1,colframe=\@titlecolor]
-}%
-{%
-	\end{tcolorbox}%
-}%
-
-\newenvironment{blockcomment}[1][Comment]{%
-	\begin{tcolorbox}[title=#1,colframe=magenta]
-}%
-{%
-	\end{tcolorbox}%
-}%
-
-\newenvironment{warning_box*}{%
-	\begin{tcolorbox}[colframe=\@titlecolor]
-}%
-{%
-	\end{tcolorbox}%
-}%
-
 \newenvironment{indented}{%
   \par%
   \medskip
@@ -348,6 +326,35 @@
 \par\vspace{\baselineskip}
 }%
 
+% Box macros.
+
+\newcounter{specialboxctr}
+\setcounter{specialboxctr}{0}
+\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
+\providecommand\boxhrule{\tcblower}%
+
+\newenvironment{warning_box}[1]{%
+	\refstepcounter{specialboxctr}%
+	\begin{tcolorbox}[title={#1 \thespecialboxctr},colframe=\@titlecolor]
+}%
+{%
+	\end{tcolorbox}%
+}%
+
+\newenvironment{blockcomment}[1][Comment]{%
+	\refstepcounter{specialboxctr}%
+	\begin{tcolorbox}[title={#1 \thespecialboxctr},colframe=magenta]
+}%
+{%
+	\end{tcolorbox}%
+}%
+
+\newenvironment{warning_box*}{%
+	\begin{tcolorbox}[colframe=\@titlecolor]
+}%
+{%
+	\end{tcolorbox}%
+}%
 
 % New theorem-like environments
 % These will be typeset in italics
