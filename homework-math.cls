@@ -7,8 +7,6 @@
 \DeclareOption{iPad}{%
 	\renewcommand\@hmlargefont{cmbxsl10}
 	\renewcommand\@hmsmallfont{cmbxsl10}
-	\font\tenslbf=cmbxsl10
-	\font\smallslbf=cmbxsl10
 }%
 
 \ProcessOptions\relax
