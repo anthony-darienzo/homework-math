@@ -1,19 +1,21 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{homework-math}[2022/03/30 Math homework class]
 
-\font\tinyslbf=cmbxsl10
-
-\@ifclasswith{iPad}{}{%
-	\font\tenslbf=cmbxsl22
-	\font\smallslbf=cmbxsl14
-}{}%
+\newcommand\@hmlargefont{cmbxsl22}
+\newcommand\@hmsmallfont{cmbxsl14}
 
 \DeclareOption{iPad}{%
+	\renewcommand\@hmlargefont{cmbxsl10}
+	\renewcommand\@hmsmallfont{cmbxsl10}
 	\font\tenslbf=cmbxsl10
 	\font\smallslbf=cmbxsl10
 }%
 
 \ProcessOptions\relax
+
+\font\tinyslbf=cmbxsl10
+\font\tenslbf=\@hmlargefont
+\font\smallslbf=\@hmsmallfont
 
 \LoadClass{article}
 
