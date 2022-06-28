@@ -1,24 +1,42 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{homework-math}[2022/03/30 Math homework class]
+\ProvidesClass{homework-math}[2022/06/28 Math homework class]
 
+%%% DEFAULTS %%%
+\def\@true{1}
+\def\@false{0}
+
+\def\@subtitle{}
+\def\@contact{}
+\def\@author{}
+\def\@title{}
+\def\@titlecolor{black}%
+
+\newcommand\@hmgeometry\@true
+\newcommand\@hmcountbyexercises\@true
+
+\newcommand\@hmtinyfont{cmbxsl10}
 \newcommand\@hmlargefont{cmbxsl22}
 \newcommand\@hmsmallfont{cmbxsl14}
+
+%%% OPTIONS %%%
 
 \DeclareOption{iPad}{%
 	\renewcommand\@hmlargefont{cmbxsl10}
 	\renewcommand\@hmsmallfont{cmbxsl10}
 }%
 
+\DeclareOption{nogeometry}{%
+	\renewcommand\@hmgeometry\@false
+}%
+
+\DeclareOption{countbysections}{%
+	\renewcommand\@hmcountbyexercises\@false
+}%
+
 \ProcessOptions\relax
-
-\font\tinyslbf=cmbxsl10
-\font\tenslbf=\@hmlargefont
-\font\smallslbf=\@hmsmallfont
-
 \LoadClass{article}
 
-\renewcommand{\normalsize}{\fontsize{10}{12}\selectfont}
-
+%%% DEPENDENCIES %%%
 \RequirePackage{fancyhdr}
 \RequirePackage{etoolbox}% 
 \RequirePackage{graphicx}
@@ -32,45 +50,81 @@
 \RequirePackage{gensymb}
 \RequirePackage{faktor}
 \RequirePackage{stackengine}
-
 \RequirePackage{hyperref}
 \RequirePackage[shortcuts]{extdash}
-
 \RequirePackage{setspace}
-\onehalfspacing%
-
 \RequirePackage{xcolor}
-
 \RequirePackage{tcolorbox}
-
 % Add this package to count the number of exercises in the document.
 \RequirePackage{totcount}
-
 \RequirePackage{tocloft}
-\setlength{\cftbeforesecskip}{1pt}
-\providecommand{\smalltableofcontents}{%
-\singlespacing%
-\centerline{%
-\begin{minipage}[c]{0.65\linewidth}%
-  \small
-  \tableofcontents%
-\end{minipage}%
+\if\@hmgeometry\@true
+	\RequirePackage[margin=1in]{geometry}%
+\fi
+
+%%% FONTS %%%
+
+\font\tinyslbf=\@hmtinyfont
+\font\tenslbf=\@hmlargefont
+\font\smallslbf=\@hmsmallfont
+
+\renewcommand{\normalsize}{\fontsize{10}{12}\selectfont}
+
+%%% DOCUMENT SETUP %%%
+
+%% Setup
+
 \onehalfspacing%
+\setlength{\cftbeforesecskip}{1pt}
+
+% header commands are called at the end to give a chance for the user to load
+% the geometry package, which must be loaded before headers are defined
+\AtEndPreamble{%
+  \pagestyle{fancy}
+  \rhead{\textit\@subtitle}
+  \lhead{\textit\@title}
+  \cfoot{\thepage}
 }%
-}
 
-\def\@subtitle{}
+\definecolor{IlliniBlue}{RGB}{19,41,75}
+\gdef\@titlecolor{IlliniBlue}
+
+\newcounter{exctr}
+\setcounter{exctr}{0}
+\regtotcounter{exctr}
+\renewcommand\theexctr{\arabic{exctr}}%
+
+\newcounter{sectionrulechecker}
+\newcommand{\nosectionrule}{\setcounter{sectionrulechecker}{1}}
+\setcounter{sectionrulechecker}{0}
+
+\newcounter{specialboxctr}
+\setcounter{specialboxctr}{0}
+
+\if\@hmcountbyexercises\@true
+	\renewcommand\theequation{\theexctr.\arabic{equation}}%
+	\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
+\else
+	\renewcommand\theequation{\thesection.\arabic{equation}}%
+	\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
+\fi
+
+%% Document methods %%
 \def\subtitle#1{\gdef\@subtitle{#1}}
-\def\@contact{}
 \def\contact#1{\gdef\@contact{#1}}
-
-\def\@titlecolor{red!95!green!90!blue!90!}%
 \def\titlecolor#1{\gdef\@titlecolor{#1}}%
-
-\def\@author{}
-\def\@title{}
-
 \edef\measurepage{\dimexpr\pagegoal-\pagetotal-\baselineskip\relax}
+
+\providecommand{\smalltableofcontents}{%
+	\singlespacing%
+	\centerline{%
+		\begin{minipage}[c]{0.65\linewidth}%
+			\small
+			\tableofcontents%
+		\end{minipage}%
+		\onehalfspacing%
+	}%
+}%
 
 \renewcommand{\maketitle}{{%
   \thispagestyle{plain} % surpress header on first page
@@ -111,15 +165,9 @@
 % Maintain compatibility with typewriter-math
 \providecommand\makehomeworktitle{\maketitle}
 
-% header commands are called at the end to give a chance for the user to load
-% the geometry package, which must be loaded before headers are defined
-\AtEndPreamble{%
-  \pagestyle{fancy}
-  \rhead{\textit\@subtitle}
-  \lhead{\textit\@title}
-  \cfoot{\thepage}
-}%
+%%% FORMATTING METHODS %%%
 
+% Section delimiter using circular dots.
 \providecommand{\dhorline}[3][0]{%
     \tikz[baseline]{\path[decoration={markings,
       mark=between positions 0 and 1 step 2*#3
@@ -142,7 +190,7 @@
   \par\medskip
 }
 
-% ABBREVIATIONS
+%%% ABBREVIATIONS %%%
 % For declaring objects in a category (in a Haskell-like manner)
 \providecommand{\catin}{\mathrel{::}}
 
@@ -232,17 +280,6 @@
 
 \def\comment#1{{\color{magenta} [#1]}}
 
-\newcounter{exctr}
-\setcounter{exctr}{0}
-\renewcommand\theexctr{\arabic{exctr}}%
-\renewcommand\theequation{\theexctr.\arabic{equation}}%
-\regtotcounter{exctr}
-
-\newcounter{sectionrulechecker}
-\newcommand{\nosectionrule}{\setcounter{sectionrulechecker}{1}}
-\setcounter{sectionrulechecker}{0}
-
-
 \newenvironment{exercise}[1][]{%
 \refstepcounter{exctr}%
 \setcounter{sectionrulechecker}{0}
@@ -257,7 +294,6 @@
 		\fi%
 	\fi%
 }%
-
 
 \newenvironment{exercise*}{%
 \noindent\textbf{Exercise:}%
@@ -328,9 +364,6 @@
 
 % Box macros.
 
-\newcounter{specialboxctr}
-\setcounter{specialboxctr}{0}
-\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
 \providecommand\boxhrule{\tcblower}%
 
 \newenvironment{warning_box}[1]{%
@@ -358,7 +391,11 @@
 
 % New theorem-like environments
 % These will be typeset in italics
-\newtheorem{theorem}{Theorem}[exctr]
+\if\@hmcountbyexercises\@true
+	\newtheorem{theorem}{Theorem}[exctr]%
+\else
+	\newtheorem{theorem}{Theorem}[section]%
+\fi
 \newtheorem*{theorem*}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem*{proposition*}{Proposition}
