@@ -21,8 +21,8 @@
 %%% OPTIONS %%%
 
 \DeclareOption{iPad}{%
-	\renewcommand\@hmlargefont{cmbxsl10}
-	\renewcommand\@hmsmallfont{cmbxsl10}
+	\renewcommand\@hmlargefont{cmbxsl10 at 22pt}
+	\renewcommand\@hmsmallfont{cmbxsl10 at 14pt}
 }%
 
 \DeclareOption{nogeometry}{%
