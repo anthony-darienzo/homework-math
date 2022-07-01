@@ -87,6 +87,14 @@
 }%
 
 \definecolor{IlliniBlue}{RGB}{19,41,75}
+\definecolor{UrbanaOrange}{RGB}{232,74,39}
+\definecolor{UIUCTeal}{RGB}{13,96,94}
+\definecolor{UIUCGray-blue}{RGB}{111,175,199}
+\definecolor{UIUCCitron}{RGB}{191,212,109}
+\definecolor{UIUCDark-yellow}{RGB}{255,209,37}
+\definecolor{UIUCSalmon}{RGB}{238,94,94}
+\definecolor{UIUCPeriwinkle}{RGB}{79,104,152}
+
 \gdef\@titlecolor{IlliniBlue}
 
 \newcounter{exctr}
