@@ -13,6 +13,7 @@
 
 \newcommand\@hmgeometry\@true
 \newcommand\@hmcountbyexercises\@true
+\newcommand\@hmonlymacros\@false
 
 \newcommand\@hmtinyfont{cmbxsl10}
 \newcommand\@hmlargefont{cmbxsl22}
@@ -31,6 +32,10 @@
 
 \DeclareOption{countbysections}{%
 	\renewcommand\@hmcountbyexercises\@false
+}%
+
+\DeclareOption{onlymacros}{%
+	\renewcommand\@hmonlymacros\@true
 }%
 
 \ProcessOptions\relax
@@ -58,8 +63,12 @@
 % Add this package to count the number of exercises in the document.
 \RequirePackage{totcount}
 \RequirePackage{tocloft}
-\if\@hmgeometry\@true
-	\RequirePackage[margin=1in]{geometry}%
+
+%%% Any page modifications for DEPENDENCIES go here
+\if\@hmonlymacros\@false
+	\if\@hmgeometry\@true
+		\RequirePackage[margin=1in]{geometry}%
+	\fi
 \fi
 
 %%% FONTS %%%
@@ -68,7 +77,10 @@
 \font\tenslbf=\@hmlargefont
 \font\smallslbf=\@hmsmallfont
 
-\renewcommand{\normalsize}{\fontsize{10}{12}\selectfont}
+%%% Any page modifications for FONTS go here
+\if\@hmonlymacros\@false
+	\renewcommand{\normalsize}{\fontsize{10}{12}\selectfont}
+\fi
 
 %%% DOCUMENT SETUP %%%
 
@@ -77,14 +89,6 @@
 \onehalfspacing%
 \setlength{\cftbeforesecskip}{1pt}
 
-% header commands are called at the end to give a chance for the user to load
-% the geometry package, which must be loaded before headers are defined
-\AtEndPreamble{%
-  \pagestyle{fancy}
-  \rhead{\textit\@subtitle}
-  \lhead{\textit\@title}
-  \cfoot{\thepage}
-}%
 
 \definecolor{IlliniBlue}{RGB}{19,41,75}
 \definecolor{UrbanaOrange}{RGB}{232,74,39}
@@ -109,12 +113,24 @@
 \newcounter{specialboxctr}
 \setcounter{specialboxctr}{0}
 
-\if\@hmcountbyexercises\@true
-	\renewcommand\theequation{\theexctr.\arabic{equation}}%
-	\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
-\else
-	\renewcommand\theequation{\thesection.\arabic{equation}}%
-	\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
+%%% Any page modifications for DOCUMENT SETUP.setup go here
+\if\@hmonlymacros\@false
+	\if\@hmcountbyexercises\@true
+		\renewcommand\theequation{\theexctr.\arabic{equation}}%
+		\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
+	\else
+		\renewcommand\theequation{\thesection.\arabic{equation}}%
+		\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
+	\fi
+
+	% header commands are called at the end to give a chance for the user to load
+	% the geometry package, which must be loaded before headers are defined
+	\AtEndPreamble{%
+		\pagestyle{fancy}
+		\rhead{\textit\@subtitle}
+		\lhead{\textit\@title}
+		\cfoot{\thepage}
+	}%
 \fi
 
 %% Document methods %%
@@ -134,7 +150,7 @@
 	}%
 }%
 
-\renewcommand{\maketitle}{{%
+\providecommand{\makehmtitle}{{%
   \thispagestyle{plain} % surpress header on first page
   \color{\@titlecolor}%
   {\noindent{\smallslbf{\@title}}}
@@ -169,6 +185,10 @@
 	}%
 	\bigbreak
 }}%
+
+\if\@hmonlymacros\@false
+	\renewcommand\maketitle{\makehmtitle}%
+\fi
 
 % Maintain compatibility with typewriter-math
 \providecommand\makehomeworktitle{\maketitle}
