@@ -21,6 +21,7 @@
 \newcommand\@hmlargefont{cmbxsl22}
 \newcommand\@hmsmallfont{cmbxsl14}
 
+\font\japanese=dmjhira
 %%% OPTIONS %%%
 
 \DeclareOption{iPad}{%
@@ -373,6 +374,9 @@
 \DeclareMathOperator{\Range}{Range}
 \DeclareMathOperator{\Hom}{\normalfont{\text{Hom}}}
 \DeclareMathOperator{\Sub}{\normalfont{\text{Sub}}}
+
+\DeclareMathOperator\Yo{\text{\normalfont\japanese \char"48}}
+\DeclareMathOperator\coYo{\rotatebox[origin=c]{180}{\(\Yo\)}}
 
 \providecommand{\expo}[1]{{%
   \text{\normalfont{exp}}\left(#1\right)%
