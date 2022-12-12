@@ -1,4 +1,4 @@
-\documentclass[countbysections]{./homework-math}
+\documentclass[typewriter,countbysections]{./homework-math}
 
 \title{1.4 Injective Modules}
 \author{Roger Godement}
@@ -12,13 +12,19 @@ faisceaux}}}
 	
 \maketitle%
 
+\begin{abstract}
+	Here is an abstract.
+\end{abstract}
+
 \smalltableofcontents%
 
 \section{Test}
 
 An \(A\)-module \(L\) is \emph{injective} if for every exact sequence%
 \[%
-	0 \to X' \to X \to X'' \to 0,
+	\begin{tikzcd}
+		0 \arrow[r,xkcd] & X' \arrow[r] & X \arrow[r] & X'' \arrow[r] & 0,
+	\end{tikzcd}
 \]%
 the corresponding sequence%
 \[%
@@ -67,7 +73,7 @@ injective if and only if, for every \(\lambda \neq 0\), the endomorphism \(x
 	Every \(A\)-module is a submodule of an injective \(A\)-module.
 \end{theorem*}
 
-To see this, we consider the ring \(Z\) of integers, the additive group \(\Q\)
+To see this, we consider the ring \(\Z\) of integers, the additive group \(\Q\)
 of rational numbers, and the \(\Z\)-module%
 \[%
 	\T \eqdef \Q/\Z.

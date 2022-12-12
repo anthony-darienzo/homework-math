@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{homework-math}[2022/06/28 Math homework class]
+\ProvidesClass{homework-math}[2022/12/17 Math homework class]
 
 %%% DEFAULTS %%%
 \def\@true{1}
@@ -14,6 +14,8 @@
 \newcommand\@hmgeometry\@true
 \newcommand\@hmcountbyexercises\@true
 \newcommand\@hmonlymacros\@false
+
+\newcommand\@hmtypewriter\@false
 
 \newcommand\@hmtinyfont{cmbxsl10}
 \newcommand\@hmlargefont{cmbxsl22}
@@ -38,17 +40,31 @@
 	\renewcommand\@hmonlymacros\@true
 }%
 
+\DeclareOption{typewriter}{%
+	\renewcommand\@hmtypewriter\@true
+}%
+
 \ProcessOptions\relax
-\LoadClass{article}
+\if\@hmtypewriter\@false
+	\LoadClass{article}%
+\else
+	\LoadClass[ms]{memoir}%
+	\setlrmarginsandblock{1in}{1in}{*}%
+	\setulmarginsandblock{1in}{*}{1}%
+	\checkandfixthelayout%
+	\chapterstyle{dash}%
+\fi
 
 %%% DEPENDENCIES %%%
 \RequirePackage{fancyhdr}
 \RequirePackage{etoolbox}% 
 \RequirePackage{graphicx}
-\RequirePackage{tikz,tikz-cd}
+\RequirePackage{scalerel}
+\RequirePackage{tikz,tikz-cd,tikz-3dplot}
 \usetikzlibrary{%
   shapes, arrows, calc, positioning, shapes.geometric,%
-  decorations.pathreplacing, decorations.markings, mindmap%
+  decorations.pathreplacing, decorations.markings, mindmap,%
+	decorations, patterns, decorations.pathmorphing%
 }%
 \RequirePackage{mathtools}
 \RequirePackage{amsthm,amsmath,amssymb}
@@ -63,6 +79,11 @@
 % Add this package to count the number of exercises in the document.
 \RequirePackage{totcount}
 \RequirePackage{tocloft}
+
+\if\@hmtypewriter\@true
+	\renewcommand{\headrulewidth}{0pt}%
+	\RequirePackage{memhfixc}%
+\fi
 
 %%% Any page modifications for DEPENDENCIES go here
 \if\@hmonlymacros\@false
@@ -86,9 +107,14 @@
 
 %% Setup
 
-\onehalfspacing%
-\setlength{\cftbeforesecskip}{1pt}
-
+\if\@hmonlymacros\@false
+	\if\@hmtypewriter\@false
+		\onehalfspacing%
+		\setlength{\cftbeforesecskip}{1pt}%
+	\else
+		\OnehalfSpacing%
+	\fi
+\fi
 
 \definecolor{IlliniBlue}{RGB}{19,41,75}
 \definecolor{UrbanaOrange}{RGB}{232,74,39}
@@ -100,6 +126,9 @@
 \definecolor{UIUCPeriwinkle}{RGB}{79,104,152}
 
 \gdef\@titlecolor{IlliniBlue}
+
+\def\@leftheader{\@title}
+\def\@rightheader{\@subtitle}
 
 \newcounter{exctr}
 \setcounter{exctr}{0}
@@ -114,6 +143,42 @@
 \setcounter{specialboxctr}{0}
 
 %%% Any page modifications for DOCUMENT SETUP.setup go here
+% tikz magic from:
+% https://tex.stackexchange.com/questions/39296/simulating-hand-drawn-lines
+\pgfset{%
+	/pgf/decoration/randomness/.initial=5,%
+	/pgf/decoration/wavelength/.initial=100%
+}%
+\pgfdeclaredecoration{sketch}{init}{%
+	\state{init}[width=0pt,next state=draw,persistent precomputation={%
+		\pgfmathsetmacro\pgf@lib@dec@sketch@t0%
+	}]{}%
+	\state{draw}[width=\pgfdecorationsegmentlength,%
+	auto corner on length=\pgfdecorationsegmentlength,%
+	persistent precomputation={%
+		\pgfmathsetmacro\pgf@lib@dec@sketch@t{mod(\pgf@lib@dec@sketch@t+pow(\pgfkeysvalueof{/pgf/decoration/randomness},rand),\pgfkeysvalueof{/pgf/decoration/wavelength})}%
+	}]{%
+		\pgfmathparse{sin(2*\pgf@lib@dec@sketch@t*pi/\pgfkeysvalueof{/pgf/decoration/wavelength} r)}%
+		\pgfpathlineto{\pgfqpoint{\pgfdecorationsegmentlength}{\pgfmathresult\pgfdecorationsegmentamplitude}}%
+	}%
+	\state{final}{}%
+}%
+\tikzset{%
+	xkcd/.style={decorate,decoration={sketch,segment length=0.5pt,amplitude=0.5pt}}%
+}%
+\tikzset{%
+	xkcdto/.style={decorate,decoration{sketch,segment%
+	length=0.5pt,amplitude=0.5pt,mark=at position 0.5 with {\arrow{to}}}}%
+}%
+\pgfmathsetseed{1}%
+% End tikz magic
+
+\if\@hmtypewriter\@true
+	\tikzcdset{%
+		arrows=xkcd%
+	}%
+\fi
+
 \if\@hmonlymacros\@false
 	\if\@hmcountbyexercises\@true
 		\renewcommand\theequation{\theexctr.\arabic{equation}}%
@@ -125,28 +190,53 @@
 
 	% header commands are called at the end to give a chance for the user to load
 	% the geometry package, which must be loaded before headers are defined
-	\AtEndPreamble{%
-		\pagestyle{fancy}
-		\rhead{\textit\@subtitle}
-		\lhead{\textit\@title}
-		\cfoot{\thepage}
-	}%
+	\if\@hmtypewriter\@false
+		\AtEndPreamble{%
+			\pagestyle{fancy}%
+			\rhead{\textit\@subtitle}%
+			\lhead{\textit\@title}%
+			\cfoot{\thepage}%
+		}%
+	\else
+		\AtEndPreamble{%
+			\pagestyle{fancy}%
+			\rhead{\@rightheader}%
+			\lhead{\@leftheader}%
+			\cfoot{\thepage}%
+			\RequirePackage[upright]{fourier}%
+			\RequirePackage[frenchmath,italic,nosmalldelims]{mathastext}%
+			\raggedright%
+			\renewcommand{\thesection}{\arabic{section}}
+		}%
+	\fi
 \fi
 
 %% Document methods %%
+
+\if\@hmtypewriter\@true
+	\def\hmtypewritertableofcontents{%
+		\begingroup%
+		\setlength{\beforechapskip}{0pt}
+		\tableofcontents*%
+		\endgroup%
+	}%
+\fi
+
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\contact#1{\gdef\@contact{#1}}
 \def\titlecolor#1{\gdef\@titlecolor{#1}}%
+\def\leftheader#1{\gdef\@leftheader{#1}}%
+\def\rightheader#1{\gdef\@rightheader{#1}}%
 \edef\measurepage{\dimexpr\pagegoal-\pagetotal-\baselineskip\relax}
 
 \providecommand{\smalltableofcontents}{%
-	\singlespacing%
+	\if\@hmtypewriter\@false\singlespacing\else\SingleSpacing\fi%
 	\centerline{%
 		\begin{minipage}[c]{0.65\linewidth}%
 			\small
-			\tableofcontents%
+			\if\@hmtypewriter\@true\hmtypewritertableofcontents\else\tableofcontents\fi%
 		\end{minipage}%
-		\onehalfspacing%
+		\if\@hmtypewriter\@false\onehalfspacing\else\OnehalfSpacing\fi%
 	}%
 }%
 
@@ -186,12 +276,26 @@
 	\bigbreak
 }}%
 
-\if\@hmonlymacros\@false
-	\renewcommand\maketitle{\makehmtitle}%
-\fi
 
 % Maintain compatibility with typewriter-math
-\providecommand\makehomeworktitle{\maketitle}
+\newcommand\makehomeworktitle{%
+	\thispagestyle{empty}%
+	\begin{center}%
+		{\LARGE\@title}%
+		\ifx\@subtitle\empty\else\\{\LARGE\@subtitle}\fi
+		\ifx\@author\empty\else\\{\large\@author}\fi
+		\ifx\@contact\empty\else\\{\large\@contact}\fi
+		\ifx\@date\empty\else\\{\large\@date}\fi
+	\end{center}%
+}%
+
+\if\@hmonlymacros\@false
+	\if\@hmtypewriter\@false
+		\renewcommand\maketitle{\makehmtitle}%
+	\else
+		\renewcommand\maketitle{\makehomeworktitle}%
+	\fi
+\fi
 
 %%% FORMATTING METHODS %%%
 
@@ -201,14 +305,20 @@
       mark=between positions 0 and 1 step 2*#3
       with {\node[fill, circle, minimum width=#3, inner sep=0pt, anchor=south west] {};}},postaction={decorate}]  (0,#1) -- ++(#2,0);}}
 	
-\def\sectionrule{%
-  \par
-	\vskip \baselineskip
-	\cleaders\vbox{\noindent\hspace*{\fill}\mbox{\dhorline{5em}{3pt}}\hspace*{\fill}}%
-	\vskip 0.5em
-	\nointerlineskip %
-	\vskip \baselineskip
-}%
+\if\@hmtypewriter\@true
+	\def\sectionrule{%
+		\fancybreak{* * * * *}%
+	}%
+\else
+	\def\sectionrule{%
+		\par%
+		\vskip \baselineskip%
+		\cleaders\vbox{\noindent\hspace*{\fill}\mbox{\dhorline{5em}{3pt}}\hspace*{\fill}}%
+		\vskip 0.5em%
+		\nointerlineskip %
+		\vskip \baselineskip%
+	}%
+\fi
 
 \newenvironment{indented}{%
   \par%
@@ -217,6 +327,12 @@
   \noindent\ignorespaces}{%
   \par\medskip
 }
+
+\if\@hmtypewriter\@true
+	\renewcommand\qedsymbol{\tikz{%
+		\node[xkcd,draw,fill=black] (b) at (0,0) {};%
+	}}%
+\fi
 
 %%% ABBREVIATIONS %%%
 % For declaring objects in a category (in a Haskell-like manner)
@@ -410,13 +526,23 @@
 	\end{tcolorbox}%
 }%
 
-\newenvironment{warning_box*}{%
-	\begin{tcolorbox}[colframe=\@titlecolor]
-}%
-{%
-	\end{tcolorbox}%
-}%
-
+\if\@hmtypewriter\@false
+	\newenvironment{warning_box*}{%
+		\begin{tcolorbox}[colframe=\@titlecolor]%
+	}%
+	{%
+		\end{tcolorbox}%
+	}%
+\else
+	\newenvironment{warning_box*}{%
+		\fancybreak{***}%
+		\begin{indented}%
+	}%
+	{%
+		\end{indented}%
+		\fancybreak{***}%
+	}%
+\fi
 % New theorem-like environments
 % These will be typeset in italics
 \if\@hmcountbyexercises\@true
@@ -440,6 +566,8 @@
 \newtheorem{researchquestion}[theorem]{Further Research}
 \newtheorem*{researchquestion*}{Further Research}
 \newtheorem{mathrule}[theorem]{Rule}
+\newtheorem{ansatz}[theorem]{Ansatz}
+\newtheorem*{ansatz*}{Ansatz}
 
 % These will be typeset in Roman
 \theoremstyle{definition}
@@ -455,3 +583,46 @@
 \newtheorem{bigremark}[theorem]{Remark}
 \newtheorem*{bigremark*}{Remark}
 
+% Silly things
+\def\TLiPoS{%
+    \normalfont%
+    TL
+    \kern-.35em
+    {%
+        \sbox\z@ A%
+        \vbox to\ht\z@ {%
+            \hbox{% start a horizontal box
+                \check@mathfonts%
+                \fontsize\sf@size\z@%
+                \math@fontsfalse%
+                \selectfont%
+                I
+            }%
+            \vss%
+        }%
+    }%
+    \kern-.30em%
+    P
+    \kern-.46em%
+    o
+    \kern-.36em%
+    S
+}
+
+% Modifications to make certain macros look funnier in typewriter mode.
+\def\xkcdto{\scalerel*{\begin{tikzpicture}%
+	\draw[xkcd,->] (0,0) -- (0.5,0);%
+\end{tikzpicture}}{-}}%
+\def\xkcdleftarrow{\scalerel*{\begin{tikzpicture}%
+	\draw[xkcd,<-] (0,0) -- (0.5,0);%
+\end{tikzpicture}}{-}}%
+\def\xkcdmapsto{\scalerel*{\begin{tikzpicture}%
+	\draw[xkcd,|->] (0,0) -- (0.5,0);%
+\end{tikzpicture}}{-}}%
+\if\@hmtypewriter\@true
+	\renewcommand\to{\xkcdto}
+	\renewcommand\leftarrow{\xkcdleftarrow}
+	\renewcommand\mapsto{\xkcdmapsto}
+	\renewcommand\in{\mathrel{\,\varepsilon\,}}
+	\renewcommand\notin{\mathrel{\,\!\not\mathrel{\,\varepsilon\!}\,\,}}
+\fi
