@@ -1,5 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{homework-math}[2022/12/17 Math homework class]
+% Originally based on my homework-math class.
+\ProvidesClass{thesis-note}[2023/12/10 Math homework class]
 
 %%% DEFAULTS %%%
 \def\@true{1}
@@ -14,8 +15,9 @@
 \newcommand\@hmgeometry\@true
 \newcommand\@hmcountbyexercises\@true
 \newcommand\@hmonlymacros\@false
-
 \newcommand\@hmtypewriter\@false
+\newcommand\@hmnoplex\@false
+\newcommand\@hmdatetime\@true
 
 \newcommand\@hmtinyfont{cmbxsl10}
 \newcommand\@hmlargefont{cmbxsl22}
@@ -43,6 +45,14 @@
 
 \DeclareOption{typewriter}{%
 	\renewcommand\@hmtypewriter\@true
+}%
+
+\DeclareOption{defaultdate}{%
+  \renewcommand\@hmdatetime\@false
+}%
+
+\DeclareOption{noplex}{%
+    \renewcommand\@hmnoplex\@true
 }%
 
 \ProcessOptions\relax
@@ -80,6 +90,23 @@
 % Add this package to count the number of exercises in the document.
 \RequirePackage{totcount}
 \RequirePackage{tocloft}
+
+% Make pretty titles
+\RequirePackage{soul}
+\RequirePackage[explicit]{titlesec}
+
+\if\@hmnoplex\@false
+    \RequirePackage{plex-serif}
+    \RequirePackage{plex-sans}
+    \RequirePackage{plex-mono}
+    \renewcommand\@hmtinyfont{IBMPlexSans-BoldItalic-tlf-ot1 at 10pt}
+    \renewcommand\@hmlargefont{IBMPlexSans-BoldItalic-tlf-ot1 at 22pt}
+    \renewcommand\@hmsmallfont{IBMPlexSans-BoldItalic-tlf-ot1 at 14pt}
+\fi
+
+\if\@hmdatetime\@true
+  \RequirePackage[long,nodayofweek,24hr]{datetime}
+\fi
 
 \if\@hmtypewriter\@true
 	\renewcommand{\headrulewidth}{0pt}%
@@ -125,6 +152,7 @@
 \definecolor{UIUCDark-yellow}{RGB}{255,209,37}
 \definecolor{UIUCSalmon}{RGB}{238,94,94}
 \definecolor{UIUCPeriwinkle}{RGB}{79,104,152}
+\definecolor{ThesisSage}{RGB}{127,160,110}
 
 \gdef\@titlecolor{IlliniBlue}
 
@@ -142,6 +170,59 @@
 
 \newcounter{specialboxctr}
 \setcounter{specialboxctr}{0}
+
+\newbox\@hmTitleUnderlineBox
+\newcommand*\@hmTitleUnderline[1]{%
+  \bgroup
+  \setbox\@hmTitleUnderlineBox\hbox{\colorbox{\@titlecolor}\strut}%
+  \setul{\dimexpr\dp\@hmTitleUnderlineBox-.3ex\relax}{.3ex}%
+  \ul{#1}%
+  \egroup%
+}%
+\newcommand*\@hmSectionNumberBox[1]{%
+  \colorbox{\@titlecolor}
+  {%
+    \makebox[2.5em][c]{%
+      \color{white}%
+      \strut%
+      \csname the#1\endcsname
+    }%
+  }%
+  \@hmTitleUnderline{\ \ \ }%
+}%
+\newcommand*\@hmBareNumberBox[1]{%
+  \colorbox{\@titlecolor}
+  {%
+    \makebox[2.5em][c]{%
+      \color{white}%
+      \strut%
+      \csname the#1\endcsname
+    }%
+  }%
+  {\ \ \ }%
+}%
+
+\if\@hmonlymacros\@false
+  \if\@hmtypewriter\@false
+    \titleformat{\section}%
+    {\Large\bfseries\sffamily\color{\@titlecolor}}%
+    {\@hmSectionNumberBox{section}}%
+    {0pt}%
+    {\@hmTitleUnderline{#1}}%
+    \titleformat{\subsection}%
+    {\large\bfseries\sffamily\color{\@titlecolor}}%
+    {\@hmBareNumberBox{subsection}}
+    {0pt}
+    {{#1}}
+    \titleformat{\subsubsection}%
+    {\normalsize\bfseries\sffamily}%
+    {\@hmBareNumberBox{subsubsection}}%
+    {0pt}%
+    {{#1}}%
+  \fi
+\fi
+
+
 
 %%% Any page modifications for DOCUMENT SETUP.setup go here
 % tikz magic from:
@@ -183,7 +264,7 @@
 \if\@hmonlymacros\@false
 	\if\@hmcountbyexercises\@true
 		\renewcommand\theequation{\theexctr.\arabic{equation}}%
-		\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
+		\renewcommand\thespecialboxctr{\theexctr.\arabic{specialboxctr}}%
 	\else
 		\renewcommand\theequation{\thesection.\arabic{equation}}%
 		\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
@@ -378,6 +459,19 @@
 \DeclareMathOperator\Yo{\text{\normalfont\japanese \char"48}}
 \DeclareMathOperator\coYo{\rotatebox[origin=c]{180}{\(\Yo\)}}
 
+%% For adding special characters from other fonts
+%% https://tex.stackexchange.com/a/247819
+\DeclareFontFamily{U}{BOONDOX-calo}{\skewchar\font=45}
+\DeclareFontShape{U}{BOONDOX-calo}{m}{n}{
+  <-> s*[1.05] BOONDOX-r-calo}{}
+\DeclareFontShape{U}{BOONDOX-calo}{b}{n}{
+  <-> s*[1.05] BOONDOX-b-calo}{}
+\DeclareMathAlphabet{\mathbdc}{U}{BOONDOX-calo}{m}{n}
+\SetMathAlphabet{\mathbdc}{bold}{U}{BOONDOX-calo}{b}{n}
+\DeclareMathAlphabet{\mathbbdc}{U}{BOONDOX-calo}{b}{n}
+\DeclareSymbolFont{BOONDOX-calo}{U}{BOONDOX-calo}{m}{n}
+\DeclareMathSymbol{\pcal}{\mathalpha}{BOONDOX-calo}{112}
+
 \providecommand{\expo}[1]{{%
   \text{\normalfont{exp}}\left(#1\right)%
 }}%
@@ -514,39 +608,68 @@
 
 \providecommand\boxhrule{\tcblower}%
 
-\newenvironment{warning_box}[1]{%
-	\refstepcounter{specialboxctr}%
-	\begin{tcolorbox}[title={#1 \thespecialboxctr},colframe=\@titlecolor]
-}%
-{%
-	\end{tcolorbox}%
+\newenvironment{colored_box}[2][\@titlecolor]{%
+  \refstepcounter{specialboxctr}%
+  \begin{tcolorbox}[title={#2 \thespecialboxctr}, colframe=#1]
+  }%
+  {%
+  \end{tcolorbox}%
 }%
 
-\newenvironment{blockcomment}[1][Comment]{%
-	\refstepcounter{specialboxctr}%
-	\begin{tcolorbox}[title={#1 \thespecialboxctr},colframe=magenta]
+\newenvironment{colored_box*}[1][\@titlecolor]{%
+  \begin{tcolorbox}[colframe=#1]%
+  }%
+  {%
+  \end{tcolorbox}%
 }%
-{%
-	\end{tcolorbox}%
+
+\newenvironment{comment_box}[1][Comment]{%
+  \begin{colored_box}[magenta]{#1}%
+  }%
+  {%
+  \end{colored_box}%
+}%
+
+\newenvironment{comment_box*}{%
+  \begin{colored_box*}[magenta]%
+  }%
+  {%
+  \end{colored_box*}%
 }%
 
 \if\@hmtypewriter\@false
-	\newenvironment{warning_box*}{%
-		\begin{tcolorbox}[colframe=\@titlecolor]%
-	}%
-	{%
-		\end{tcolorbox}%
-	}%
+  \newenvironment{warning_box}[1]{%
+    \begin{colored_box}{#1}%
+    }%
+    {%
+    \end{colored_box}%
+  }%
+  \newenvironment{warning_box*}{%
+    \begin{colored_box*}%
+    }%
+    {%
+    \end{colored_box*}%
+  }%
 \else
-	\newenvironment{warning_box*}{%
-		\fancybreak{***}%
-		\begin{indented}%
-	}%
-	{%
-		\end{indented}%
-		\fancybreak{***}%
-	}%
+  \newenvironment{warning_box}[1]{%
+    \fancybreak{***}%
+    \textbf{#1}%
+    \begin{indented}%
+    }%
+    {%
+    \end{indented}%
+    \fancybreak{***}%
+  }%
+  \newenvironment{warning_box*}{%
+    \fancybreak{***}%
+    \begin{indented}%
+    }%
+    {%
+    \end{indented}%
+    \fancybreak{***}%
+  }%
 \fi
+
 % New theorem-like environments
 % These will be typeset in italics
 \if\@hmcountbyexercises\@true
