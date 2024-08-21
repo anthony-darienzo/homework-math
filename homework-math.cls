@@ -1,10 +1,11 @@
 \NeedsTeXFormat{LaTeX2e}
-% Originally based on my homework-math class.
-\ProvidesClass{thesis-note}[2023/12/10 Math homework class]
+% Originally based on my homework-math and thesis-note classes.
+\ProvidesClass{homework-math}[2024/08/20 Personal math homework and note class]
 
 %%% DEFAULTS %%%
 \def\@true{1}
 \def\@false{0}
+\def\ifempty#1{\def\temp{#1} \ifx\temp\empty}
 
 \def\@subtitle{}
 \def\@contact{}
@@ -12,12 +13,19 @@
 \def\@title{}
 \def\@titlecolor{black}%
 
+% Some macros have a `@hm` prefix, whereas others have a `@tn`
+% prefix. This is because the hm macros originate in the old
+% homework-math class, and the tn macros came from a modified thesis
+% note class. At some point this should change (we don't need to worry
+% about backwards compatible since any macro with the `@` prefix is
+% hidden from the user.
+
 \newcommand\@hmgeometry\@true
-\newcommand\@hmcountbyexercises\@true
+\newcommand\@hmcountbyexercises\@false
 \newcommand\@hmonlymacros\@false
 \newcommand\@hmtypewriter\@false
-\newcommand\@hmnoplex\@false
-\newcommand\@hmdatetime\@true
+\newcommand\@tnnoplex\@false
+\newcommand\@tndatetime\@true
 
 \newcommand\@hmtinyfont{cmbxsl10}
 \newcommand\@hmlargefont{cmbxsl22}
@@ -48,11 +56,11 @@
 }%
 
 \DeclareOption{defaultdate}{%
-  \renewcommand\@hmdatetime\@false
+  \renewcommand\@tndatetime\@false
 }%
 
 \DeclareOption{noplex}{%
-    \renewcommand\@hmnoplex\@true
+    \renewcommand\@tnnoplex\@true
 }%
 
 \ProcessOptions\relax
@@ -95,7 +103,7 @@
 \RequirePackage{soul}
 \RequirePackage[explicit]{titlesec}
 
-\if\@hmnoplex\@false
+\if\@tnnoplex\@false
     \RequirePackage{plex-serif}
     \RequirePackage{plex-sans}
     \RequirePackage{plex-mono}
@@ -104,7 +112,7 @@
     \renewcommand\@hmsmallfont{IBMPlexSans-BoldItalic-tlf-ot1 at 14pt}
 \fi
 
-\if\@hmdatetime\@true
+\if\@tndatetime\@true
   \RequirePackage[long,nodayofweek,24hr]{datetime}
 \fi
 
@@ -156,8 +164,14 @@
 
 \gdef\@titlecolor{IlliniBlue}
 
-\def\@leftheader{\@title}
-\def\@rightheader{\@subtitle}
+\def\@leftheader{\@title: \@subtitle}
+\def\@rightheader{%
+  \ifempty{\Sectionname} \Subsectionname\else%
+    \ifempty{\Subsectionname} \Sectionname\else%
+      \Sectionname: \Subsectionname%
+    \fi%
+  \fi%
+}%
 
 \newcounter{exctr}
 \setcounter{exctr}{0}
@@ -171,29 +185,29 @@
 \newcounter{specialboxctr}
 \setcounter{specialboxctr}{0}
 
-\newbox\@hmTitleUnderlineBox
-\newcommand*\@hmTitleUnderline[1]{%
+\newbox\@tnTitleUnderlineBox
+\newcommand*\@tnTitleUnderline[1]{%
   \bgroup
-  \setbox\@hmTitleUnderlineBox\hbox{\colorbox{\@titlecolor}\strut}%
-  \setul{\dimexpr\dp\@hmTitleUnderlineBox-.3ex\relax}{.3ex}%
-  \ul{#1}%
+  \setbox\@tnTitleUnderlineBox\hbox{\colorbox{\@titlecolor}\strut}%
+  \setul{\dimexpr\dp\@tnTitleUnderlineBox-.3ex\relax}{.3ex}%
+  \ul{\mbox{#1}}%
   \egroup%
 }%
-\newcommand*\@hmSectionNumberBox[1]{%
+\newcommand*\@tnSectionNumberBox[1]{%
   \colorbox{\@titlecolor}
   {%
-    \makebox[2.5em][c]{%
+    \makebox[1.5em][c]{%
       \color{white}%
       \strut%
       \csname the#1\endcsname
     }%
   }%
-  \@hmTitleUnderline{\ \ \ }%
+  \@tnTitleUnderline{\ \ \ }%
 }%
-\newcommand*\@hmBareNumberBox[1]{%
+\newcommand*\@tnBareNumberBox[1]{%
   \colorbox{\@titlecolor}
   {%
-    \makebox[2.5em][c]{%
+    \makebox[1.5em][c]{%
       \color{white}%
       \strut%
       \csname the#1\endcsname
@@ -205,18 +219,18 @@
 \if\@hmonlymacros\@false
   \if\@hmtypewriter\@false
     \titleformat{\section}%
-    {\Large\bfseries\sffamily\color{\@titlecolor}}%
-    {\@hmSectionNumberBox{section}}%
-    {0pt}%
-    {\@hmTitleUnderline{#1}}%
-    \titleformat{\subsection}%
     {\large\bfseries\sffamily\color{\@titlecolor}}%
-    {\@hmBareNumberBox{subsection}}
+    {\@tnSectionNumberBox{section}}%
+    {0pt}%
+    {\@tnTitleUnderline{#1}}%
+    \titleformat{\subsection}%
+    {\normalsize\bfseries\sffamily\color{\@titlecolor}}%
+    {\@tnBareNumberBox{subsection}}
     {0pt}
     {{#1}}
     \titleformat{\subsubsection}%
     {\normalsize\bfseries\sffamily}%
-    {\@hmBareNumberBox{subsubsection}}%
+    {\@tnBareNumberBox{subsubsection}}%
     {0pt}%
     {{#1}}%
   \fi
@@ -264,7 +278,7 @@
 \if\@hmonlymacros\@false
 	\if\@hmcountbyexercises\@true
 		\renewcommand\theequation{\theexctr.\arabic{equation}}%
-		\renewcommand\thespecialboxctr{\theexctr.\arabic{specialboxctr}}%
+		\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
 	\else
 		\renewcommand\theequation{\thesection.\arabic{equation}}%
 		\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
@@ -361,19 +375,30 @@
 
 % Maintain compatibility with typewriter-math
 \newcommand\makehomeworktitle{%
-	\thispagestyle{empty}%
-	\begin{center}%
-		{\LARGE\@title}%
-		\ifx\@subtitle\empty\else\\{\LARGE\@subtitle}\fi
-		\ifx\@author\empty\else\\{\large\@author}\fi
-		\ifx\@contact\empty\else\\{\large\@contact}\fi
-		\ifx\@date\empty\else\\{\large\@date}\fi
-	\end{center}%
+  \thispagestyle{empty}%
+  \begin{center}%
+    {\LARGE\@title}%
+    \ifx\@subtitle\empty\else\\{\LARGE\@subtitle}\fi
+    \ifx\@author\empty\else\\{\large\@author}\fi
+    \ifx\@contact\empty\else\\{\large\@contact}\fi
+    \ifx\@date\empty\else\\{\large\@date}\fi
+  \end{center}%
+}%
+
+\newcommand\maketntitle{%
+  \thispagestyle{empty}%
+  {\color{\@titlecolor}\noindent\tenslbf\@title}%
+  \ifx\@subtitle\empty\else\\{\smallslbf\@subtitle}\fi
+  \smallskip
+  \ifx\@author\empty\else\\{\color{darkgray}\@author}\fi
+  \ifx\@contact\empty\else\\{\color{darkgray}\@contact}\fi
+  \smallskip
+  \ifx\@date\empty\else\\{\color{gray}\tinyslbf\@date}\fi
 }%
 
 \if\@hmonlymacros\@false
 	\if\@hmtypewriter\@false
-		\renewcommand\maketitle{\makehmtitle}%
+		\renewcommand\maketitle{\maketntitle}%
 	\else
 		\renewcommand\maketitle{\makehomeworktitle}%
 	\fi
@@ -488,27 +513,6 @@
 \providecommand{\C}{\mathbb{C}}
 \providecommand{\Z}{\mathbb{Z}}
 \providecommand\op{{\mathsf{op}}}
-
-\providecommand\cdsquare[8]{%
-  \begin{tikzcd}[ampersand replacement=\&]%
-    #1 \arrow[r,"#2"] \arrow[d,"#4"] \& #3 \arrow[d,"#5"]\\
-    #6 \arrow[r,"#7"] \& #8
-  \end{tikzcd}%
-}%
-
-\providecommand\cdlift[6]{%
-  \begin{tikzcd}[ampersand replacement=\&]%
-    \& #5 \arrow[d,"#6"] \\
-    #1 \arrow[r,"#2"] \arrow[ur,"#4",dashed] \& #3
-  \end{tikzcd}%
-}%
-
-\providecommand\cddescend[6]{%
-  \begin{tikzcd}[ampersand replacement=\&]%
-    #1 \arrow[r,"#2"] \arrow[dr,"#6",dashed] \& #3 \arrow[d,"#4"]\\
-    \& #5
-  \end{tikzcd}%
-}%
 
 % Based on
 % https://davidyat.es/2016/07/27/writing-a-latex-macro-that-takes-a-variable-number-of-arguments/
@@ -753,3 +757,27 @@
 	\renewcommand\in{\mathrel{\,\varepsilon\,}}
 	\renewcommand\notin{\mathrel{\,\!\not\mathrel{\,\varepsilon\!}\,\,}}
 \fi
+
+%%% FOR COMPATIBILITY %%%
+% These macros are useless, but I keep them to make sure old projects
+% still compile.
+\providecommand\cdsquare[8]{%
+  \begin{tikzcd}[ampersand replacement=\&]%
+    #1 \arrow[r,"#2"] \arrow[d,"#4"] \& #3 \arrow[d,"#5"]\\
+    #6 \arrow[r,"#7"] \& #8
+  \end{tikzcd}%
+}%
+
+\providecommand\cdlift[6]{%
+  \begin{tikzcd}[ampersand replacement=\&]%
+    \& #5 \arrow[d,"#6"] \\
+    #1 \arrow[r,"#2"] \arrow[ur,"#4",dashed] \& #3
+  \end{tikzcd}%
+}%
+
+\providecommand\cddescend[6]{%
+  \begin{tikzcd}[ampersand replacement=\&]%
+    #1 \arrow[r,"#2"] \arrow[dr,"#6",dashed] \& #3 \arrow[d,"#4"]\\
+    \& #5
+  \end{tikzcd}%
+}%
