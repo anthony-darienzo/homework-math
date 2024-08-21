@@ -4,20 +4,18 @@
  "homework-math"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
-                     '(("article" "") ("memoir" "ms")))
+                     '(("memoir" "ms" "article")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
                      '(("fancyhdr" "") ("etoolbox" "") ("graphicx" "") ("scalerel" "") ("tikz" "") ("tikz-cd" "") ("tikz-3dplot" "") ("mathtools" "") ("amsthm" "") ("amsmath" "") ("amssymb" "") ("gensymb" "") ("faktor" "") ("stackengine" "") ("hyperref" "") ("extdash" "shortcuts") ("setspace" "") ("xcolor" "") ("tcolorbox" "") ("totcount" "") ("tocloft" "") ("soul" "") ("titlesec" "explicit") ("plex-serif" "") ("plex-sans" "") ("plex-mono" "") ("datetime" "long" "nodayofweek" "24hr") ("memhfixc" "") ("geometry" "margin=1in") ("fourier" "upright") ("mathastext" "frenchmath" "italic" "nosmalldelims")))
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
-   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "url")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "nolinkurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperbaseurl")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "hyperimage")
+   (add-to-list 'LaTeX-verbatim-macros-with-braces-local "href")
    (add-to-list 'LaTeX-verbatim-macros-with-delims-local "path")
    (TeX-run-style-hooks
     "latex2e"
-    "article"
-    "art10"
     "memoir"
     "memoir10"
     "fancyhdr"
@@ -72,11 +70,13 @@
     '("bvec" 1)
     '("hw" 1)
     '("ul" 1)
+    '("printtoctitle" 1)
     "japanese"
     "tinyslbf"
     "tenslbf"
     "smallslbf"
     "nosectionrule"
+    "hmtableofcontents"
     "smalltableofcontents"
     "makehmtitle"
     "makecenteredtitle"
@@ -104,7 +104,6 @@
     "op"
     "boxhrule"
     "ifempty"
-    "hmtypewritertableofcontents"
     "subtitle"
     "contact"
     "titlecolor"

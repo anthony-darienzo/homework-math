@@ -64,15 +64,19 @@
 }%
 
 \ProcessOptions\relax
-\if\@hmtypewriter\@false
-	\LoadClass{article}%
+
+\if\@hmtypewriter\@true
+  \LoadClass[ms]{memoir}
 \else
-	\LoadClass[ms]{memoir}%
-	\setlrmarginsandblock{1in}{1in}{*}%
-	\setulmarginsandblock{1in}{*}{1}%
-	\checkandfixthelayout%
-	\chapterstyle{dash}%
+  \LoadClass[article]{memoir}
+  \OnehalfSpacing%
 \fi
+\counterwithout{section}{chapter}
+
+\setlrmarginsandblock{1in}{1in}{*}%
+\setulmarginsandblock{1in}{*}{1}%
+\checkandfixthelayout%
+\chapterstyle{dash}%
 
 %%% DEPENDENCIES %%%
 \RequirePackage{fancyhdr}
@@ -143,14 +147,7 @@
 
 %% Setup
 
-\if\@hmonlymacros\@false
-	\if\@hmtypewriter\@false
-		\onehalfspacing%
-		\setlength{\cftbeforesecskip}{1pt}%
-	\else
-		\OnehalfSpacing%
-	\fi
-\fi
+\OnehalfSpacing%
 
 \definecolor{IlliniBlue}{RGB}{19,41,75}
 \definecolor{UrbanaOrange}{RGB}{232,74,39}
@@ -163,15 +160,6 @@
 \definecolor{ThesisSage}{RGB}{127,160,110}
 
 \gdef\@titlecolor{IlliniBlue}
-
-\def\@leftheader{\@title: \@subtitle}
-\def\@rightheader{%
-  \ifempty{\Sectionname} \Subsectionname\else%
-    \ifempty{\Subsectionname} \Sectionname\else%
-      \Sectionname: \Subsectionname%
-    \fi%
-  \fi%
-}%
 
 \newcounter{exctr}
 \setcounter{exctr}{0}
@@ -216,6 +204,10 @@
   {\ \ \ }%
 }%
 
+\gdef\@hmSectionname{}%
+\gdef\@hmSubsectionname{}%
+\gdef\@hmSubsubsectionname{}%
+
 \if\@hmonlymacros\@false
   \if\@hmtypewriter\@false
     \titleformat{\section}%
@@ -225,9 +217,9 @@
     {\@tnTitleUnderline{#1}}%
     \titleformat{\subsection}%
     {\normalsize\bfseries\sffamily\color{\@titlecolor}}%
-    {\@tnBareNumberBox{subsection}}
+    {\@tnBareNumberBox{subsection}}%
     {0pt}
-    {{#1}}
+    {{#1}}%
     \titleformat{\subsubsection}%
     {\normalsize\bfseries\sffamily}%
     {\@tnBareNumberBox{subsubsection}}%
@@ -235,8 +227,6 @@
     {{#1}}%
   \fi
 \fi
-
-
 
 %%% Any page modifications for DOCUMENT SETUP.setup go here
 % tikz magic from:
@@ -276,13 +266,13 @@
 \fi
 
 \if\@hmonlymacros\@false
-	\if\@hmcountbyexercises\@true
-		\renewcommand\theequation{\theexctr.\arabic{equation}}%
-		\renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
-	\else
-		\renewcommand\theequation{\thesection.\arabic{equation}}%
-		\renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
-	\fi
+  \if\@hmcountbyexercises\@true
+    \renewcommand\theequation{\theexctr.\arabic{equation}}%
+    \renewcommand\thespecialboxctr{\arabic{exctr}.\arabic{specialboxctr}}%
+  \else
+    \renewcommand\theequation{\thesection.\arabic{equation}}%
+    \renewcommand\thespecialboxctr{\thesection.\arabic{specialboxctr}}%
+  \fi
 
 	% header commands are called at the end to give a chance for the user to load
 	% the geometry package, which must be loaded before headers are defined
@@ -291,13 +281,13 @@
 			\pagestyle{fancy}%
 			\rhead{\textit\@subtitle}%
 			\lhead{\textit\@title}%
-			\cfoot{\thepage}%
+                        \cfoot{\thepage}%
 		}%
 	\else
 		\AtEndPreamble{%
 			\pagestyle{fancy}%
-			\rhead{\@rightheader}%
-			\lhead{\@leftheader}%
+			\rhead{\@subtitle}%
+			\lhead{\@title}%
 			\cfoot{\thepage}%
 			\RequirePackage[upright]{fourier}%
 			\RequirePackage[frenchmath,italic,nosmalldelims]{mathastext}%
@@ -309,14 +299,14 @@
 
 %% Document methods %%
 
-\if\@hmtypewriter\@true
-	\def\hmtypewritertableofcontents{%
-		\begingroup%
-		\setlength{\beforechapskip}{0pt}
-		\tableofcontents*%
-		\endgroup%
-	}%
-\fi
+\renewcommand{\absnamepos}{flushleft}
+\setlength{\absleftindent}{0in}
+\renewcommand{\abstractnamefont}{\Large\bfseries\sffamily\color{\@titlecolor}}
+
+\renewcommand{\printtoctitle}[1]{%
+  \flushleft{\Large\bfseries\sffamily\color{\@titlecolor}{#1}}
+  \vspace{-\baselineskip} % Sorry
+}
 
 \def\subtitle#1{\gdef\@subtitle{#1}}
 \def\contact#1{\gdef\@contact{#1}}
@@ -325,15 +315,22 @@
 \def\rightheader#1{\gdef\@rightheader{#1}}%
 \edef\measurepage{\dimexpr\pagegoal-\pagetotal-\baselineskip\relax}
 
-\providecommand{\smalltableofcontents}{%
-	\if\@hmtypewriter\@false\singlespacing\else\SingleSpacing\fi%
-	\centerline{%
-		\begin{minipage}[c]{0.65\linewidth}%
-			\small
-			\if\@hmtypewriter\@true\hmtypewritertableofcontents\else\tableofcontents\fi%
-		\end{minipage}%
-		\if\@hmtypewriter\@false\onehalfspacing\else\OnehalfSpacing\fi%
-	}%
+\providecommand{\hmtableofcontents}{%
+  \begingroup%
+  \setlength{\beforechapskip}{0pt}%
+  \tableofcontents*%
+  \endgroup%
+}%
+
+\providecommand{\smalltableofcontents}{
+  \SingleSpacing%
+  \centerline{%
+    \begin{minipage}[c]{0.65\linewidth}%
+      \small
+      \hmtableofcontents%
+    \end{minipage}%
+    \OnehalfSpacing%
+  }%
 }%
 
 \providecommand{\makehmtitle}{{%
