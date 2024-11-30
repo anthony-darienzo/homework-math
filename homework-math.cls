@@ -21,7 +21,7 @@
 % hidden from the user.
 
 \newcommand\@hmgeometry\@true
-\newcommand\@hmcountbyexercises\@false
+\newcommand\@hmcountbyexercises\@true
 \newcommand\@hmonlymacros\@false
 \newcommand\@hmtypewriter\@false
 \newcommand\@tnnoplex\@false
